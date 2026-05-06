@@ -131,27 +131,7 @@ func (v *VLog) loadActiveFile() error {
 	lastFile := files[len(files)-1]
 	fileID := parseFileID(lastFile)
 
-	// 以读写模式打开文件
-	f, err := os.OpenFile(filepath.Join(v.dataDir, lastFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	// 获取文件状态以确定写入偏移量
-	stat, err := f.Stat()
-	if err != nil {
-		_ = f.Close()
-		log.Println(err)
-		return err
-	}
-
-	// 设置当前活跃文件的相关属性
-	v.activeFile = f
-	v.activeFileID = fileID
-	v.activeFileOffset = stat.Size()
-
-	return nil
+	return v.createNewActiveFile(fileID + 1)
 }
 
 // createNewActiveFile 创建一个新的活跃日志文件
