@@ -236,8 +236,15 @@ func (r *Reader) readEntry() (*Entry, int64, error) {
 func (r *Reader) advanceToNextFile() error {
 	// 关闭当前文件
 	if r.currentFile != nil {
+		filename := r.currentFile.Name()
+		log.Println("Closing file:", filename)
 		_ = r.currentFile.Close()
 		r.currentFile = nil
+
+		err := os.Remove(filename)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	// 获取所有日志文件列表
